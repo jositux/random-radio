@@ -23,15 +23,21 @@
 #  
 
 import threading
+import subprocess
 import random
 
 index = 0;
+
+def bash_command(cmd):
+	subprocess.Popen(['/bin/bash', '-c', cmd])
 
 def capturar():
 	global index
 	threading.Timer(5.0, capturar).start()
 	aleatorio = random.randint(1, 11)
 	print "Captura %i seg. - posición %i" % (index, aleatorio)
+	comando = 'a="Comando hacia bash con variable random = %i" && echo "${a}"' % (aleatorio)
+	bash_command(comando)
 	index = index + 5
 
 capturar()
