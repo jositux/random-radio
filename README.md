@@ -1,2 +1,2 @@
 # random-radio
-Genera una frecuencia aleatoria para Gnu-Radio, graba en mp3 durante cierto tiempo
+Genera una frecuencia aleatoria usando RTL_FM, graba en mp3 durante cierto tiempo
