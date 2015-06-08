@@ -1,43 +1,53 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  ranradio.py
-#  
-#  Copyright 2015 jositux <info@gdotg.com>
-#  
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#  
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#  
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
-#  
-#  
+# ranradio.py
+#
+# Creative Commons Josi Guaimas <info@gdotg.com> 2015
+# 
+# El siguiente código escrito en el lenguaje python se utilizó para la 
+# instalación. Detecta ondas de radio en el aire de manera aleatoria a 
+# través de un receptor de radio SDR y produce como resultado archivos .mp3
+#
+#
 
-import threading
-import subprocess
 import random
+import decimal
+import subprocess
+from time import sleep
 
-index = 0;
+"""Rango de frecuencias de FM Interesantes de captar en Oberá (Mhz)"""
+frec_min = 80  
+frec_max = 150
 
 def bash_command(cmd):
 	subprocess.Popen(['/bin/bash', '-c', cmd])
+	
+def obtener_frecuencia(minima, maxima):
+	"""Sortea una frecuencia entre la mínima y la máxima ej. 99.7M"""
+	return str(decimal.Decimal(random.randint(minima*100, maxima*100,))/100)
 
-def capturar():
-	global index
-	threading.Timer(5.0, capturar).start()
-	aleatorio = random.randint(1, 11)
-	print "Captura %i seg. - posición %i" % (index, aleatorio)
-	comando = 'a="Comando hacia bash con variable random = %i" && echo "${a}"' % (aleatorio)
+def play(frec):
+	"""Reproduce una frecuencia de radio"""
+	comando = 'rtl_fm -f %sM -M fm -s 192.161k -A std  -l 0 -E deemp -r 44.1k \
+	            | play -r 32k -t raw -e s -b 16 -c 1 -V1 -' % (frec)
 	bash_command(comando)
-	index = index + 5
 
-capturar()
+def grabar(frec):
+	"""Graba el audio obtenido de la frecuencia a un archivo .mp3"""
+	comando = 'rtl_fm -f %sM  -M fm -s 170k -A std  -l 0 -E deemp -r 44.1k  \
+	           | lame -s 22.0 -r -h -V 0 -b 128 - %s.mp3' % (frec, frec)
+	bash_command(comando)
+
+def stop():
+	"""Detiene la reproducción o grabación"""
+	bash_command('killall rtl_fm')
+
+while True:
+	"""Reproduce o graba durante 5 segundos y repite la
+	secuencia hasta que el usuario presione ctrl + c"""
+	frecuencia = obtener_frecuencia(frec_min, frec_max)
+	grabar(frecuencia)
+	sleep(5)
+	stop()
+
