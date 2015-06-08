@@ -25,7 +25,7 @@ def bash_command(cmd):
 	
 def obtener_frecuencia(minima, maxima):
 	"""Sortea una frecuencia entre la mínima y la máxima ej. 99.7M"""
-	return str(decimal.Decimal(random.randint(minima*100, maxima*100,))/100)
+	return str(decimal.Decimal(random.randint(minima * 100, maxima * 100)) / 100)
 
 def play(frec):
 	"""Reproduce una frecuencia de radio"""
