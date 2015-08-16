@@ -18,7 +18,7 @@ from time import sleep
 
 """Rango de frecuencias de FM Interesantes de captar en Oberá (Mhz)"""
 frec_min = 80  
-frec_max = 150
+frec_max = 107
 
 def bash_command(cmd):
 	subprocess.Popen(['/bin/bash', '-c', cmd])
